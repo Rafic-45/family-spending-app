@@ -83,14 +83,14 @@ Plus: `create_family` / `join_family` RPCs, an auto-profile + auto-confirm trigg
 new users, RLS policies scoping everything to the caller's family, a public `receipts`
 storage bucket, and Realtime enabled on `entries`.
 
-The `anon` key in `lib/config.dart` is a **public** client key — it's safe to ship. All
-access control is enforced by the database's RLS policies, not by keeping the key secret.
+The publishable key in `lib/config.dart` is a **public** client key — it's safe to ship.
+All access control is enforced by the database's RLS policies, not by keeping the key secret.
 
 ### Re-applying the schema elsewhere
 
 To set up a fresh Supabase project, run the SQL files in `supabase/migrations/` in order
-(via the SQL editor, the Supabase CLI, or `psql`), then drop the new project's URL + anon
-key into `lib/config.dart`.
+(via the SQL editor, the Supabase CLI, or `psql`), then drop the new project's URL +
+publishable key into `lib/config.dart`.
 
 ---
 

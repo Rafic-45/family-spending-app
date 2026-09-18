@@ -1,17 +1,18 @@
 /// Connection settings for the "family-spend" Supabase project.
 ///
-/// The anon key below is a *public*, RLS-protected client key. It is designed to
-/// ship inside client apps — every real access-control decision is enforced by
-/// the database's row level security policies, not by keeping this key secret.
+/// The publishable key below is a *public*, RLS-protected client key. It is
+/// designed to ship inside client apps — every real access-control decision is
+/// enforced by the database's row level security policies, not by keeping this
+/// key secret.
 class AppConfig {
   const AppConfig._();
 
   /// Supabase project URL.
   static const String supabaseUrl = 'https://jqdgzeteqghqdozqxlmu.supabase.co';
 
-  /// Public anon key (safe to embed in the app).
-  static const String supabaseAnonKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxZGd6ZXRlcWdocWRvenF4bG11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MTgyMDMsImV4cCI6MjEwNTI5NDIwM30.UoS4XdkPIVeiBTo0Tf4pnWZPtlQWfEyfDADR80ZmLcE';
+  /// Public publishable key (safe to embed in the app).
+  static const String supabasePublishableKey =
+      'sb_publishable_4F6_maUcWsfNT5mJsrNxZQ_qgqcUprA';
 
   /// Symbol shown in front of amounts (e.g. "$45.00").
   static const String currencySymbol = '\$';

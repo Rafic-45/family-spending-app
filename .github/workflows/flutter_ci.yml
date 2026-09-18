@@ -41,39 +41,42 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build APK
-        run: flutter build apk --release
+      # Split per ABI so each APK is small (the universal APK is ~50 MB; the
+      # arm64-v8a one — virtually all modern phones — is ~15 MB).
+      - name: Build APKs (split per ABI)
+        run: flutter build apk --release --split-per-abi
 
-      - name: Upload APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
           name: family-spend-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
           if-no-files-found: error
 
-      # Publish the APK where it can actually be downloaded: a GitHub Release
-      # (a tappable link) and a lightweight apk-dist branch (one binary only).
+      # Publish the APKs where they can actually be downloaded: a GitHub Release
+      # (tappable links) and a lightweight apk-dist branch (one small binary).
       - name: Publish APK (release + apk-dist branch)
         if: github.ref_name == 'claude/adoring-ride-6ve4gh'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          APK=build/app/outputs/flutter-apk/app-release.apk
+          DIR=build/app/outputs/flutter-apk
+          ARM64="$DIR/app-arm64-v8a-release.apk"
 
-          # 1) GitHub Release with a stable tag -> direct download link.
+          # 1) GitHub Release with every ABI variant -> direct download links.
           gh release delete apk-latest --yes --cleanup-tag || true
-          gh release create apk-latest "$APK#family-spend.apk" \
+          gh release create apk-latest "$DIR"/*.apk \
             --target "$GITHUB_SHA" \
             --title "Family Spend — latest APK" \
-            --notes "Debug-signed release APK built by CI. Android only. Enable 'install unknown apps' to install."
+            --notes "Debug-signed release APKs built by CI. Android only. Most phones: app-arm64-v8a-release.apk. Enable 'install unknown apps' to install."
 
-          # 2) Orphan apk-dist branch holding just the APK, so it can be fetched.
-          cp "$APK" family-spend.apk
+          # 2) Orphan apk-dist branch holding the small arm64 APK, so it can be fetched.
+          cp "$ARM64" family-spend-arm64.apk
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan apk-dist
           git rm -r --cached . -q || true
-          git add -f family-spend.apk
+          git add -f family-spend-arm64.apk
           git commit -m "APK build for $GITHUB_SHA"
           git push -f origin apk-dist

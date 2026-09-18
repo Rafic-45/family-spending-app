@@ -1,0 +1,6 @@
+include: package:flutter_lints/flutter.yaml
+
+# Add project-specific lint overrides below if needed.
+# See https://dart.dev/tools/analysis for details.
+linter:
+  rules:

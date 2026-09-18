@@ -32,6 +32,18 @@ jobs:
       - name: Generate Android platform files
         run: flutter create --platforms=android --project-name family_spend .
 
+      # Flutter's template only puts the INTERNET permission in the debug/profile
+      # manifests, so release APKs can't reach the network. Add it to the main one.
+      - name: Ensure INTERNET permission in release manifest
+        run: |
+          set -euo pipefail
+          M=android/app/src/main/AndroidManifest.xml
+          if ! grep -q 'android.permission.INTERNET' "$M"; then
+            perl -0777 -pi -e 's/(<manifest\b[^>]*>)/$1\n    <uses-permission android:name="android.permission.INTERNET"\/>/' "$M"
+          fi
+          echo "----- $M (head) -----"
+          sed -n '1,12p' "$M"
+
       - name: Install dependencies
         run: flutter pub get
 
